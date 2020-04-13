@@ -51,12 +51,24 @@ func conv_degre(input string) int {
 	return i
 }
 
-func casting_one(input string) Cast{
+func casting_one(input string) (Cast, bool) {
+	err := false
+	degre := 0
 	r := regexp.MustCompile(`((\-\s):?)?(\d+(\.\d+)?)`)
 	value :=  conv_value(r.FindString(input))
-	degre := conv_degre(Strstr(input, "^"))
+	tmp := Strstr(input, "^")
+
+	if (strings.Contains(tmp, "-")) {
+		fmt.Println("Degre cannot be negative")
+		err = true
+	} else if (strings.Contains(tmp, ".")) {
+		fmt.Println("Degre must be an integer")
+		err = true
+	} else {
+		degre = conv_degre(Strstr(input, "^"))
+	}
 	cast := Cast{value, degre}
-	return cast
+	return cast, err
 }
 
 func reduce(input []Cast, to_add Cast) []Cast {
@@ -75,19 +87,27 @@ func reduce(input []Cast, to_add Cast) []Cast {
 	return new_tab
 }
 
-func casting_reduce(input []string) []Cast {
+func casting_reduce(input []string) ([]Cast, bool) {
 	tab := make([]Cast, 0 ,1)
 	do_reduce := false
 	for _, i := range input {
 		if (i == "=") {
 			do_reduce = true
 		} else if do_reduce {
-			tab = reduce(tab, casting_one(i))
+			tmp, err := casting_one(i)
+			if err {
+				return tab, true
+			}
+			tab = reduce(tab, tmp)
 		} else {
-			tab = append(tab, casting_one(i))
+			tmp, err := casting_one(i)
+			if err {
+				return tab, true
+			}
+			tab = append(tab, tmp)
 		}
 	}
-	return tab
+	return tab, false
 }
 
 func print_polynomial_degre(equa []Cast) bool {
@@ -107,7 +127,7 @@ func print_equation(to_print []Cast) {
 		if (index > 0 && i.value > 0) {
 			fmt.Print("+ ")
 			fmt.Print(i.value)
-			} else if (i.value < 0) {
+		} else if (i.value < 0) {
 			fmt.Print("- ")
 			fmt.Print(i.value * -1)
 		} else {
@@ -125,11 +145,13 @@ func main() {
 		fmt.Println("Missing arg")
 		return
 	}
-	r := regexp.MustCompile(`((((\+|\-)\s):?)?(\d+(\.\d+)?)\s[*]\s[X][\^]\d)|[=]`)
+	r := regexp.MustCompile(`((((\+|\-)\s):?)?(\d+(\.\d+)?)\s[*]\s[X][\^](-)?(\d+(\.\d+)?))|[=]`)
 	matches := r.FindAllString(os.Args[1], -1)
-	tmp := casting_reduce(matches)
-	print_equation(tmp)
-	if (!print_polynomial_degre(tmp)) {
-		fmt.Println("The polynomial degree is stricly greater than 2, I can't solve.")
+	tmp, err := casting_reduce(matches)
+	if err == false { 
+		print_equation(tmp)
+		if (!print_polynomial_degre(tmp)) {
+			fmt.Println("The polynomial degree is stricly greater than 2, I can't solve.")
+		}
 	}
 }
