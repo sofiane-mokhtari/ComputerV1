@@ -71,12 +71,16 @@ func casting_one(input string) (Cast, bool) {
 	return cast, err
 }
 
-func reduce(input []Cast, to_add Cast) []Cast {
+func reduce(input []Cast, to_add Cast, before bool) []Cast {
 	have_not_been_add := true
 	new_tab := make([]Cast, 0 ,1)
 	for _, i := range input {
 		if (i.degre == to_add.degre) {
-			i.value = i.value - to_add.value
+			if before {
+				i.value = i.value + to_add.value
+			} else {
+				i.value = i.value - to_add.value
+			}
 			have_not_been_add = false
 		}
 		new_tab = append(new_tab, i)
@@ -98,13 +102,18 @@ func casting_reduce(input []string) ([]Cast, bool) {
 			if err {
 				return tab, true
 			}
-			tab = reduce(tab, tmp)
+			tab = reduce(tab, tmp, false)
 		} else {
 			tmp, err := casting_one(i)
 			if err {
 				return tab, true
 			}
-			tab = append(tab, tmp)
+			is_already_get_it := is_got_already_degre(tab, tmp.degre)
+			if is_already_get_it {
+				tab = reduce(tab, tmp, true)
+			} else {
+				tab = append(tab, tmp)
+			}
 		}
 	}
 	return tab, false
@@ -140,7 +149,16 @@ func print_equation(to_print []Cast) {
 	fmt.Println(" = 0")
 }
 
-func get_for_degre(equa []Cast, degre int) float64 {
+func is_got_already_degre(equa []Cast, degre int) bool {
+	for _, i := range equa {
+		if (i.degre == degre) {
+			return true
+		}
+	}
+	return false
+}
+
+func get_value_for_degre(equa []Cast, degre int) float64 {
 	for _, i := range equa {
 		if (i.degre == degre) {
 			return i.value
@@ -150,9 +168,9 @@ func get_for_degre(equa []Cast, degre int) float64 {
 }
 
 func discriminate(equa []Cast) {
-	a := get_for_degre(equa, 2)
-	b := get_for_degre(equa, 1)
-	c := get_for_degre(equa, 0)
+	a := get_value_for_degre(equa, 2)
+	b := get_value_for_degre(equa, 1)
+	c := get_value_for_degre(equa, 0)
 	delta := b * b - 4 * a * c
 	if (delta > 0) {
 		delta_sqrt := math.Sqrt(delta)
@@ -170,6 +188,15 @@ func discriminate(equa []Cast) {
 	}
 }
 
+func get_resultat(equa []Cast) {
+	b := get_value_for_degre(equa, 1)
+	c := get_value_for_degre(equa, 0)
+	fmt.Print("Their is only one solution x = ")
+	fmt.Print(c * -1)
+	fmt.Print(" / ")
+	fmt.Println(b)
+}
+
 func main() {
 	if (len(os.Args) < 2) {
 		fmt.Println("Missing arg")
@@ -185,6 +212,8 @@ func main() {
 			fmt.Println("The polynomial degree is stricly greater than 2, I can't solve.")
 		} else if higher_degre == 2 {
 			discriminate(tmp)
+		} else {
+			get_resultat(tmp)
 		}
 	}
 }
