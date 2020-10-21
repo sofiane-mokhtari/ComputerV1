@@ -1,1 +1,3 @@
-# ComputerV1V1
+# ComputerV1
+
+**Programe resolveur d'équation simple en go**
