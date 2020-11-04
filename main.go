@@ -6,7 +6,7 @@
 /*   By: smokhtar <smokhtar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/23 12:47:53 by smokhtar          #+#    #+#             */
-/*   Updated: 2020/10/21 13:47:35 by smokhtar         ###   ########.fr       */
+/*   Updated: 2020/11/02 11:00:44 by smokhtar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ package main
 import (
 	"os"
 	"fmt"
-	"source"
+	"./src/source"
 )
 
 func computer(input string) {
