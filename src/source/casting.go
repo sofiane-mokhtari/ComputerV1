@@ -6,7 +6,7 @@
 /*   By: smokhtar <smokhtar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/23 12:48:11 by smokhtar          #+#    #+#             */
-/*   Updated: 2020/09/23 12:48:12 by smokhtar         ###   ########.fr       */
+/*   Updated: 2020/11/04 17:30:36 by smokhtar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ func casting_one(input string) (Cast, bool) {
 	} else if (strings.Contains(tmp, ".")) {
 		fmt.Println("Degre must be an integer")
 		err = true
-	} else {
+	} else if tmp != "" {
 		degre = Conv_degre(Strstr(input, "^"))
 	}
 	cast := Cast{value, degre}
@@ -49,7 +49,9 @@ func reduce(input []Cast, to_add Cast, before bool) []Cast {
 			}
 			have_not_been_add = false
 		}
-		new_tab = append(new_tab, i)
+		if (i.value != 0 || i.degre != 0) {
+			new_tab = append(new_tab, i)
+		}
 	}
 	if (have_not_been_add) {
 		new_tab = append(new_tab, to_add)
