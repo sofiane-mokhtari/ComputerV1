@@ -6,7 +6,7 @@
 /*   By: smokhtar <smokhtar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/23 12:48:29 by smokhtar          #+#    #+#             */
-/*   Updated: 2020/10/21 15:22:16 by smokhtar         ###   ########.fr       */
+/*   Updated: 2020/11/04 17:31:21 by smokhtar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ package tests
 
 import (
     "fmt"
-    "source"
+    "../source"
     "strconv"
     "testing"
 )
@@ -63,18 +63,27 @@ func doTestParsing() {
         "2X^2 + 1 = 1",
         "5 * X^0 + 4 * X^1 = 4 * X^0",
         "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0",
+        "5 * X^0 + 13 * X^1 + 3 * X^2 = 1 * X^0 + 1 * X^1",
+        "6 * X^0 + 11 * X^1 + 5 * X^2 = 1 * X^0 + 1 * X^1",
+        "5 * X^0 + 3 * X^1 + 3 * X^2 = 1 * X^0 + 0 * X^1",
+        "5 + 3 * X^1 + 3 * X^2 = 1 + 0 * X^1",
     }
 
     expected := [...]string{
         "[]",
-        "[]d",
+        "[{2 2}]",
         "[{1 0} {4 1}]",
         "[{4 0} {4 1} {-9.3 2}]",
+        "[{4 0} {12 1} {3 2}]",
+        "[{5 0} {10 1} {5 2}]",
+        "[{4 0} {3 1} {3 2}]",
+        "[{4 0} {3 1} {3 2}]",
     }
 
     for i, e := range inputs {
         tmp, err := source.Parsing(e)
-        if (expected[i] != castToString(tmp)) {
+        // fmt.Println(castToString(tmp))
+        if expected[i] != castToString(tmp) {
             fmt.Println(Red("--- FAIL:\t\tTestParsing Number " + strconv.Itoa(i) + " ", err))
         } else {
             fmt.Println(Green("--- SUCCES:\t\tTestParsing Number " + strconv.Itoa(i) + " "))
