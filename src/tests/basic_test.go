@@ -6,7 +6,7 @@
 /*   By: smokhtar <smokhtar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/23 12:48:29 by smokhtar          #+#    #+#             */
-/*   Updated: 2020/11/04 17:31:21 by smokhtar         ###   ########.fr       */
+/*   Updated: 2020/11/09 13:07:59 by smokhtar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,10 @@ func doTestParsing() {
         "5 * X^0 + 13 * X^1 + 3 * X^2 = 1 * X^0 + 1 * X^1",
         "6 * X^0 + 11 * X^1 + 5 * X^2 = 1 * X^0 + 1 * X^1",
         "5 * X^0 + 3 * X^1 + 3 * X^2 = 1 * X^0 + 0 * X^1",
-        "5 + 3 * X^1 + 3 * X^2 = 1 + 0 * X^1",
+        "5 + 3X^1 + 3 * X^2 = 1 + 0 * X^1",
     }
 
-    expected := [...]string{
+    expected_cast := [...]string{
         "[]",
         "[{2 2}]",
         "[{1 0} {4 1}]",
@@ -80,13 +80,49 @@ func doTestParsing() {
         "[{4 0} {3 1} {3 2}]",
     }
 
+    expected_degre := [...]int{
+        0,
+        2,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+    }
+
+    expected_discrimant := [...]string{
+        "[]",
+        "[0 -0 0]",
+        "[]",
+        "[164.8 -0.47513146390886934 0.9052389907905898]",
+        "[96 -0.3670068381445481 -3.632993161855452]",
+        "[ 0 -1 0]",
+        "[-39 0 0]",
+        "[-39 0 0]",
+    }
+    var higher_degre int
+    var tab_discriminate []float64
     for i, e := range inputs {
         tmp, err := source.Parsing(e)
-        // fmt.Println(castToString(tmp))
-        if expected[i] != castToString(tmp) {
+        if expected_cast[i] != castToString(tmp) {
             fmt.Println(Red("--- FAIL:\t\tTestParsing Number " + strconv.Itoa(i) + " ", err))
         } else {
-            fmt.Println(Green("--- SUCCES:\t\tTestParsing Number " + strconv.Itoa(i) + " "))
+            higher_degre = source.Get_polynomial_degre(tmp)
+            if expected_degre[i] == higher_degre {
+                if (higher_degre == 2) {
+                    tab_discriminate = source.Discriminate(tmp)
+                    if fmt.Sprintf(expected_discrimant[i]) == expected_discrimant[i] {
+                        fmt.Println(Green("--- SUCCES:\t\tTest Number " + strconv.Itoa(i) + " "))
+                    } else {
+                        fmt.Println(Red("--- FAIL:\t\tTestDiscriminate Number " + strconv.Itoa(i) ))
+                    }
+                } else {
+                    fmt.Println(Green("--- SUCCES:\t\tTest Number " + strconv.Itoa(i) + " "))
+                }
+            } else {
+                fmt.Println(Red("--- FAIL:\t\tTestNbDiscriminate Number " + strconv.Itoa(i) ))
+            }
         }
     }
 }
